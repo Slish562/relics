@@ -7,6 +7,7 @@ import it.hurts.sskirillss.relics.utils.Reference;
 import it.hurts.sskirillss.relics.utils.data.WorldPosition;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -56,6 +57,12 @@ public class DataComponentRegistry {
                     .build()
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PROGRESS = DATA_COMPONENTS.register("progress",
+            () -> DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
+                    .build()
+    );
+
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> TARGET = DATA_COMPONENTS.register("target",
             () -> DataComponentType.<String>builder()
                     .persistent(Codec.STRING)
@@ -69,6 +76,12 @@ public class DataComponentRegistry {
     );
 
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> RADIUS = DATA_COMPONENTS.register("radius",
+            () -> DataComponentType.<Double>builder()
+                    .persistent(Codec.DOUBLE)
+                    .build()
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Double>> HEIGHT = DATA_COMPONENTS.register("height",
             () -> DataComponentType.<Double>builder()
                     .persistent(Codec.DOUBLE)
                     .build()
@@ -89,6 +102,12 @@ public class DataComponentRegistry {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> PORTAL = DATA_COMPONENTS.register("portal",
             () -> DataComponentType.<String>builder()
                     .persistent(Codec.STRING)
+                    .build()
+    );
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BlockState>> BLOCK_STATE = DATA_COMPONENTS.register("block_state",
+            () -> DataComponentType.<BlockState>builder()
+                    .persistent(BlockState.CODEC)
                     .build()
     );
 

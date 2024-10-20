@@ -83,7 +83,7 @@ public class MidnightRobeItem extends RelicItem implements IRenderableCurio {
                                         .build())
                                 .stat(StatData.builder("distance")
                                         .icon(StatIcons.DISTANCE)
-                                        .initialValue(15D, 20D)
+                                        .initialValue(20D, 15D)
                                         .upgradeModifier(UpgradeOperation.ADD, -0.5D)
                                         .formatValue(value -> MathUtils.round(value, 1))
                                         .build())

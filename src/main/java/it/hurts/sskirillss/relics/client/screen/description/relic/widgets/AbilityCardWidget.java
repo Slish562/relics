@@ -16,6 +16,7 @@ import it.hurts.sskirillss.relics.client.screen.description.relic.particles.Expe
 import it.hurts.sskirillss.relics.client.screen.description.relic.particles.SparkParticleData;
 import it.hurts.sskirillss.relics.client.screen.description.research.AbilityResearchScreen;
 import it.hurts.sskirillss.relics.client.screen.utils.ParticleStorage;
+import it.hurts.sskirillss.relics.client.screen.utils.ScreenUtils;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.AbilityData;
 import it.hurts.sskirillss.relics.network.NetworkHandler;
@@ -157,8 +158,6 @@ public class AbilityCardWidget extends AbstractDescriptionWidget implements IHov
 
         var hasAction = canUpgrade || canResearch;
 
-        ResourceLocation card = ResourceLocation.fromNamespaceAndPath(Reference.MODID, "textures/abilities/" + BuiltInRegistries.ITEM.getKey(screen.stack.getItem()).getPath() + "/" + relic.getAbilityData(ability).getIcon().apply(minecraft.player, screen.stack, ability) + ".png");
-
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         RenderSystem.enableBlend();
@@ -176,7 +175,7 @@ public class AbilityCardWidget extends AbstractDescriptionWidget implements IHov
         var color = (float) ((canUpgrade ? 0.75F : 1.05F) + (Math.sin((player.tickCount + (ability.length() * 10)) * 0.2F) * 0.1F));
 
         if (isLockUnlocked)
-            GUIRenderer.begin(card, poseStack)
+            GUIRenderer.begin(DescriptionTextures.getAbilityCardTexture(stack, ability), poseStack)
                     .color(color, color, color, 1F)
                     .texSize(22, 31)
                     .scale(1.01F)
@@ -368,10 +367,10 @@ public class AbilityCardWidget extends AbstractDescriptionWidget implements IHov
 
         List<MutableComponent> entries = new ArrayList<>();
 
-        MutableComponent title = Component.translatable("tooltip.relics." + BuiltInRegistries.ITEM.getKey(screen.stack.getItem()).getPath() + ".ability." + ability).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.UNDERLINE);
+        MutableComponent title = Component.translatableWithFallback("tooltip.relics." + BuiltInRegistries.ITEM.getKey(screen.stack.getItem()).getPath() + ".ability." + ability, ability).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.UNDERLINE);
 
         if (!relic.isAbilityUnlocked(screen.stack, ability))
-            title.withStyle(ChatFormatting.OBFUSCATED);
+            title = ScreenUtils.obfuscate(title, 0.99F, minecraft.level.getGameTime() / 5);
 
         entries.add(title);
 
@@ -382,14 +381,28 @@ public class AbilityCardWidget extends AbstractDescriptionWidget implements IHov
             entries.add(Component.literal(" "));
 
             entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.low_level", Component.literal(String.valueOf(requiredLevel)).withStyle(ChatFormatting.BOLD))));
-        } else if (data.getMaxLevel() == 0) {
-            entries.add(Component.literal(" "));
+        } else {
+            if (!relic.isLockUnlocked(screen.stack, ability)) {
+                entries.add(Component.literal(" "));
 
-            entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.no_stats")));
-        } else if (relic.mayPlayerUpgrade(minecraft.player, screen.stack, ability)) {
-            entries.add(Component.literal(" "));
+                entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.ready_to_unlock", Component.literal(String.valueOf(relic.getMaxLockUnlocks() - relic.getLockUnlocks(screen.stack, ability))).withStyle(ChatFormatting.BOLD))));
+            } else {
+                if (!relic.isAbilityResearched(screen.stack, ability)) {
+                    entries.add(Component.literal(" "));
 
-            entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.ready_to_upgrade")));
+                    entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.unresearched")));
+                } else {
+                    if (data.getMaxLevel() == 0) {
+                        entries.add(Component.literal(" "));
+
+                        entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.no_stats")));
+                    } else if (relic.mayPlayerUpgrade(minecraft.player, screen.stack, ability)) {
+                        entries.add(Component.literal(" "));
+
+                        entries.add(Component.literal("").append(Component.translatable("tooltip.relics.researching.relic.card.ready_to_upgrade")));
+                    }
+                }
+            }
         }
 
         for (MutableComponent entry : entries) {

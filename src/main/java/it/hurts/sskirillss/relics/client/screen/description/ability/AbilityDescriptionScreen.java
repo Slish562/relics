@@ -16,10 +16,9 @@ import it.hurts.sskirillss.relics.init.BadgeRegistry;
 import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.RelicData;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
-import it.hurts.sskirillss.relics.utils.Reference;
 import it.hurts.sskirillss.relics.utils.data.AnimationData;
 import it.hurts.sskirillss.relics.utils.data.GUIRenderer;
-import it.hurts.sskirillss.relics.utils.data.SpriteOrientation;
+import it.hurts.sskirillss.relics.utils.data.SpriteAnchor;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,7 +29,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,6 +81,9 @@ public class AbilityDescriptionScreen extends Screen implements IAutoScaledScree
         this.addRenderableWidget(new BigAbilityCardWidget(x + 60, y + 47, this, ability));
 
         this.addRenderableWidget(new LogoWidget(x + 313, y + 57, this));
+
+        if (relic.isSomethingWrongWithLevelingPoints(stack))
+            this.addRenderableWidget(new PointsFixWidget(x + 330, y + 33, this));
 
         this.addRenderableWidget(new PointsPlateWidget(x + 313, y + 77, this));
         this.addRenderableWidget(new PlayerExperiencePlateWidget(x + 313, y + 102, this));
@@ -159,24 +160,22 @@ public class AbilityDescriptionScreen extends Screen implements IAutoScaledScree
                         .frame(15, 2))
                 .end();
 
-        ResourceLocation card = ResourceLocation.fromNamespaceAndPath(Reference.MODID, "textures/abilities/" + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + "/" + relic.getAbilityData(ability).getIcon().apply(minecraft.player, stack, ability) + ".png");
-
         float color = (float) (1.05F + (Math.sin((player.tickCount + (ability.length() * 10)) * 0.2F) * 0.1F));
 
-        GUIRenderer.begin(card, poseStack)
-                .orientation(SpriteOrientation.TOP_LEFT)
+        GUIRenderer.begin(DescriptionTextures.getAbilityCardTexture(stack, ability), poseStack)
+                .anchor(SpriteAnchor.TOP_LEFT)
                 .color(color, color, color, 1F)
                 .pos(x + 67, y + 57)
                 .texSize(34, 49)
                 .end();
 
         GUIRenderer.begin(DescriptionTextures.TOP_BACKGROUND, poseStack)
-                .orientation(SpriteOrientation.TOP_LEFT)
+                .anchor(SpriteAnchor.TOP_LEFT)
                 .pos(x + 60, y + 47)
                 .end();
 
         GUIRenderer.begin(DescriptionTextures.BOTTOM_BACKGROUND, poseStack)
-                .orientation(SpriteOrientation.TOP_LEFT)
+                .anchor(SpriteAnchor.TOP_LEFT)
                 .pos(x + 60, y + 133)
                 .end();
 
@@ -185,7 +184,7 @@ public class AbilityDescriptionScreen extends Screen implements IAutoScaledScree
 
         for (int i = 0; i < Math.floor(quality / 2D); i++) {
             GUIRenderer.begin(DescriptionTextures.BIG_STAR_ACTIVE, poseStack)
-                    .orientation(SpriteOrientation.TOP_LEFT)
+                    .anchor(SpriteAnchor.TOP_LEFT)
                     .pos(x + xOff + 64, y + 110)
                     .end();
 
@@ -194,7 +193,7 @@ public class AbilityDescriptionScreen extends Screen implements IAutoScaledScree
 
         if (isAliquot)
             GUIRenderer.begin(DescriptionTextures.BIG_STAR_ACTIVE, poseStack)
-                    .orientation(SpriteOrientation.TOP_LEFT)
+                    .anchor(SpriteAnchor.TOP_LEFT)
                     .pos(x + xOff + 64, y + 110)
                     .patternSize(4, 7)
                     .texSize(8, 7)
@@ -208,7 +207,7 @@ public class AbilityDescriptionScreen extends Screen implements IAutoScaledScree
 
         guiGraphics.drawString(minecraft.font, pointsComponent, (int) (((x + 85.5F) * 1.33F) - (minecraft.font.width(pointsComponent) / 2F)), (int) ((y + 51) * 1.33F), 0xFFE278, true);
 
-        guiGraphics.drawString(minecraft.font, Component.translatable("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability)
+        guiGraphics.drawString(minecraft.font, Component.translatableWithFallback("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability, ability)
                 .withStyle(ChatFormatting.BOLD), (int) ((x + 113) * 1.33F), (int) ((y + 67) * 1.33F), 0x662f13, false);
 
         yOff = 9;

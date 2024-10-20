@@ -1,6 +1,7 @@
 package it.hurts.sskirillss.relics.entities;
 
 import it.hurts.sskirillss.relics.entities.misc.ITargetableEntity;
+import it.hurts.sskirillss.relics.utils.EntityUtils;
 import it.hurts.sskirillss.relics.utils.ParticleUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
@@ -57,7 +59,10 @@ public class DeathEssenceEntity extends ThrowableProjectile implements ITargetab
         if (this.distanceTo(target) <= 1) {
             Level level = target.getCommandSenderWorld();
 
-            target.hurt(level.damageSources().generic(), damage);
+            if (this.getOwner() instanceof Player owner)
+                EntityUtils.hurt(owner, level.damageSources().playerAttack(owner), damage);
+            else
+                target.hurt(level.damageSources().generic(), damage);
 
             this.remove(RemovalReason.KILLED);
         }

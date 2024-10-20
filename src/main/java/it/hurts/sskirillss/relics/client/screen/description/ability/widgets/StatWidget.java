@@ -9,7 +9,7 @@ import it.hurts.sskirillss.relics.items.relics.base.IRelicItem;
 import it.hurts.sskirillss.relics.items.relics.base.data.leveling.StatData;
 import it.hurts.sskirillss.relics.items.relics.base.data.misc.StatIcon;
 import it.hurts.sskirillss.relics.utils.data.GUIRenderer;
-import it.hurts.sskirillss.relics.utils.data.SpriteOrientation;
+import it.hurts.sskirillss.relics.utils.data.SpriteAnchor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -97,9 +97,9 @@ public class StatWidget extends AbstractDescriptionWidget {
 
             poseStack.scale(0.5F, 0.5F, 0.5F);
 
-            guiGraphics.drawString(minecraft.font, Component.translatable("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability + ".stat." + stat + ".title").withStyle(ChatFormatting.BOLD), (getX() + 27) * 2, (getY() + 3) * 2, 0x662f13, false);
+            guiGraphics.drawString(minecraft.font, Component.translatableWithFallback("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability + ".stat." + stat + ".title", stat).withStyle(ChatFormatting.BOLD), (getX() + 27) * 2, (getY() + 3) * 2, 0x662f13, false);
 
-            guiGraphics.drawString(minecraft.font, Component.literal("● ").append(Component.translatable("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability + ".stat." + stat + ".value", cost)), (getX() + 33) * 2, (getY() + 9) * 2, 0x662f13, false);
+            guiGraphics.drawString(minecraft.font, Component.literal("● ").append(Component.translatableWithFallback("tooltip.relics." + BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath() + ".ability." + ability + ".stat." + stat + ".value", cost.getString(), cost)), (getX() + 33) * 2, (getY() + 9) * 2, 0x662f13, false);
 
             poseStack.popPose();
         }
@@ -128,7 +128,7 @@ public class StatWidget extends AbstractDescriptionWidget {
 
         {
             GUIRenderer.begin(DescriptionTextures.STAT_DELIMITER, poseStack)
-                    .orientation(SpriteOrientation.TOP_LEFT)
+                    .anchor(SpriteAnchor.TOP_LEFT)
                     .pos(getX() + 7, getY() + height - 2)
                     .end();
         }
